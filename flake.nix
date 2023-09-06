@@ -1,5 +1,5 @@
 {
-  description = "Simple cli weather fetching app";
+  description = "Cached and opinionated fetcher for `wttr`";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -11,7 +11,23 @@
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       perSystem = { config, self', inputs', pkgs, system, ... }: {
 
-        packages = { };
+        packages = rec {
+          wt-fetch = pkgs.stdenv.mkDerivation rec {
+            inherit system;
+            name = "wt_fetch";
+            pname = "wt-fetch";
+            src = ./.;
+            nativeBuildInputs = with pkgs; [ nushell makeWrapper ];
+            installPhase = ''
+              mkdir -p $out/bin
+              mkdir -p $out/nu
+              cp ${name}.nu $out/nu/${pname}.nu
+              makeWrapper ${pkgs.nushell}/bin/nu $out/bin/${pname} \
+                --add-flags "$out/nu/${pname}.nu"
+            '';
+          };
+          default = wt-fetch;
+        };
 
         checks = {
           nushell-tests = pkgs.stdenv.mkDerivation {
