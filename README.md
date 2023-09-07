@@ -35,12 +35,17 @@ nu wt-fetch.nu --help
 ```
 ## Weather Modules
 
-Here is a preview of the four modules `wt-fetch` currently supports:
+Here is a preview of all the modules `wt-fetch` currently supports:
 
- - Condition: `⛅️`
- - Temperature: `73°F`
- - Wind: `↘8mph`
- - Moon: `🌖`
+```json
+{
+  "temp": "79°F",
+  "condition": "⛅️",
+  "wind": "↙2mph",
+  "moon": "🌘",
+  "humidity": "16%"
+}
+```
 
 ## How It Works
 
