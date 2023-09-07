@@ -13,6 +13,7 @@ def main [
     --condition,      # Include condition output.
     --wind,           # Include wind output.
     --moon,           # Include moon phase output.
+    --humidity,       # Include relative humidity output.
 ] {
 
     mut output = {}
@@ -28,6 +29,9 @@ def main [
     }
     if ($moon) {
         $output.moon = (get_current_moon_phase_icon $location $cache)
+    }
+    if ($humidity) {
+        $output.humidity = (get_current_humidity $location $cache)
     }
 
     $output | to json
@@ -58,6 +62,12 @@ export def get_current_wind [location: string, cache: path] {
 export def get_current_moon_phase_icon [location: string, cache: path] {
     let phase = (fetch_weather $location $cache).wttr.weather.astronomy.0.moon_phase.0
     match_moon_phase_icon $phase
+}
+
+# Get relative humidity.
+export def get_current_humidity [location: string, cache: path] {
+    let humidity = (fetch_weather $location $cache).wttr.current_condition.humidity.0
+    $"($humidity)%"
 }
 
 # Get cache file path as string.
@@ -250,6 +260,17 @@ def test_get_current_moon_phase_icon [] {
 
     let expected = "🌖"
     let result = get_current_moon_phase_icon $location $cache
+
+    assert equal $result $expected
+}
+
+#[test]
+def test_get_current_humidity [] {
+    let location = "KCOS"
+    let cache = "./test"
+
+    let expected = "31%"
+    let result = get_current_humidity $location $cache
 
     assert equal $result $expected
 }
