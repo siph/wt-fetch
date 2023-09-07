@@ -35,7 +35,7 @@ def main [
 
 # Get formatted temperature as string.
 export def get_current_temperature [location: string, cache: path] {
-    let temp = (fetch_weather $location ($cache | path expand)).wttr.current_condition.temp_F.0
+    let temp = (fetch_weather $location $cache).wttr.current_condition.temp_F.0
     $"($temp)°F"
 }
 
