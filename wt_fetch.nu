@@ -84,7 +84,7 @@ def build_cache [
 ] {
     try {
         std log debug "Building cache"
-        # TODO: verify validity of `weather`
+
         let weather = (
             if ($weather_file) == null {
                 http get $"https://wttr.in/($location)?format=j1"
@@ -92,6 +92,12 @@ def build_cache [
                 open $weather_file
             }
         )
+
+        # If `wttr` is not a record then the called failed on `wttr`s end.
+        if (($weather | describe | split row '<' | get 0) != "record") {
+            std error "Failed to retrieve weather from `wttr`."
+            return
+        }
 
         let now = (date now)
 
