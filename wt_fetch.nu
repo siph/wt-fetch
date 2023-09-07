@@ -9,6 +9,7 @@ const STALE_TIME = 2hr
 def main [
     location: string, # Location to check. Ex: 'KCOS' or 'Colorado Springs'.
     cache: path,      # Path to directory to store cache files.
+    --all,            # Include all.
     --temp,           # Include temperature output.
     --condition,      # Include condition output.
     --wind,           # Include wind output.
@@ -18,19 +19,19 @@ def main [
 
     mut output = {}
 
-    if ($temp) {
+    if ($temp or $all) {
         $output.temp = (get_current_temperature $location $cache)
     }
-    if ($condition) {
+    if ($condition or $all) {
         $output.condition = (get_current_weather_icon $location $cache)
     }
-    if ($wind) {
+    if ($wind or $all) {
         $output.wind = (get_current_wind $location $cache)
     }
-    if ($moon) {
+    if ($moon or $all) {
         $output.moon = (get_current_moon_phase_icon $location $cache)
     }
-    if ($humidity) {
+    if ($humidity or $all) {
         $output.humidity = (get_current_humidity $location $cache)
     }
 
