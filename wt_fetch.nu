@@ -30,7 +30,7 @@ def main [
         $output.moon = (get_current_moon_phase_icon $location $cache)
     }
 
-    $output
+    $output | to json
 }
 
 # Get formatted temperature as string.
