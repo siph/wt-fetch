@@ -151,7 +151,15 @@ def match_moon_phase_icon [phase: string] {
 
 # Match a wind direction (SE, etc...) to an icon (↘ etc...).
 def match_direction_icon [direction: string] {
-    match ($direction | str replace -a " " "" | str downcase) {
+
+    # Reduce 16-point direction to 8-point.
+    let eight_point = (
+        if (($direction | str length) == 3) {
+            $direction | str substring 1..
+        } else { $direction }
+    )
+
+    match ($eight_point | str replace -a " " "" | str downcase) {
         "s"  => "↓",
         "sw" => "↙",
         "w"  => "←",
@@ -301,6 +309,14 @@ def test_get_cache_file_path [] {
 def test_moon_phase_match [] {
     let expected = "🌘"
     let result = match_moon_phase_icon "Waning Crescent"
+
+    assert equal $result $expected
+}
+
+#[test]
+def test_wind_direction_sixteen_point [] {
+    let expected = "↗"
+    let result = match_direction_icon "ENE"
 
     assert equal $result $expected
 }
