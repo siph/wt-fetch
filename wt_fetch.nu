@@ -111,7 +111,11 @@ def build_cache [
 
 # Fetcher that will prefer to use cache.
 # Will return record of `wttr.in` json response.
-def fetch_weather [location: string, cache: path] {
+def fetch_weather [
+    location: string,
+    cache: path,
+    weather_file?: string, # For testing.
+] {
 
     let cache_file_path = get_cache_file_path $location $cache
     let now = (date now)
@@ -124,11 +128,11 @@ def fetch_weather [location: string, cache: path] {
 
         if ($now > ($modified + $STALE_TIME)) {
             std log debug $"Updating cache: ($cache_file_path)"
-            build_cache $location $cache_file_path
+            build_cache $location $cache $weather_file
         }
     } else {
         std log debug $"Initializing cache ($cache_file_path)"
-        build_cache $location $cache
+        build_cache $location $cache $weather_file
     }
 
     open $cache_file_path
@@ -234,6 +238,30 @@ def destroy_test_cache [] {
 
     # Cache is deleted
     assert equal ($test_cache | path exists) false
+}
+
+#[test]
+def test_cache_is_refreshed [] {
+    let location = "KCOS"
+    let cache = "./test"
+
+    let cache_file = get_cache_file_path $location $cache
+
+    let stale_modified = ((date now) - ($STALE_TIME * 2))
+
+    open $cache_file
+    | update modified $stale_modified
+    | save -f $cache_file
+
+    fetch_weather $location $cache "./test/wttr.json"
+
+    let fresh_modified = ((open $cache_file).modified | into datetime)
+
+    assert ($stale_modified < $fresh_modified)
+
+    # Reset cache
+    rm $cache_file
+    build_cache $location $cache "./test/wttr.json"
 }
 
 #[test]
