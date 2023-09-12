@@ -298,12 +298,20 @@ def destroy_test_cache [] {
     assert equal ($test_cache | path exists) false
 }
 
+# There isn't much documentation on nushell testing but tests seemingly run in
+# parallel. This test should use a separate cache file to prevent conflicts
+# with the tests that rely on the `KCOS` cache file.
 #[test]
 def test_cache_is_refreshed [] {
-    let location = "KCOS"
+    let location = "kcos"
     let cache = "./test"
 
     let cache_file = get_cache_file_path $location $cache
+
+    # Cache doesn't already exist
+    assert equal ($cache_file | path exists) false
+
+    build_cache $location $cache "./test/wttr.json"
 
     let stale_modified = ((date now) - ($STALE_TIME * 2))
 
@@ -317,9 +325,9 @@ def test_cache_is_refreshed [] {
 
     assert ($stale_modified < $fresh_modified)
 
-    # Reset cache
+    # Cache is deleted
     rm $cache_file
-    build_cache $location $cache "./test/wttr.json"
+    assert equal ($cache_file | path exists) false
 }
 
 #[test]
