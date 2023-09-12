@@ -46,7 +46,8 @@ export def get_current_temperature [location: string, cache: path] {
 
 # Get weather condition icon.
 export def get_current_weather_icon [location: string, cache: path] {
-    let condition = (fetch_weather $location $cache).wttr.current_condition.weatherDesc.0.0.value
+    let weather_code = (fetch_weather $location $cache).wttr.current_condition.weatherCode.0
+    let condition = (match_weather_code $weather_code)
     match_condition_icon $condition
 }
 
@@ -153,7 +154,7 @@ def match_moon_phase_icon [phase: string] {
     }
 }
 
-# Match a wind direction (SE, etc...) to an icon (↘ etc...).
+# Match a wind direction (SE, etc...) to an icon (↘, etc...).
 def match_direction_icon [direction: string] {
 
     # Reduce 16-point direction to 8-point.
@@ -175,6 +176,63 @@ def match_direction_icon [direction: string] {
         _    => "?",
     }
 }
+
+# Match a weather code ("230", etc...) to a condition ("HeavySnow", etc...).
+def match_weather_code [code: string] {
+    match $code {
+        "113" => "Sunny",
+        "116" => "PartlyCloudy",
+        "119" => "Cloudy",
+        "122" => "VeryCloudy",
+        "143" => "Fog",
+        "176" => "LightShowers",
+        "179" => "LightSleetShowers",
+        "182" => "LightSleet",
+        "185" => "LightSleet",
+        "200" => "ThunderyShowers",
+        "227" => "LightSnow",
+        "230" => "HeavySnow",
+        "248" => "Fog",
+        "260" => "Fog",
+        "263" => "LightShowers",
+        "266" => "LightRain",
+        "281" => "LightSleet",
+        "284" => "LightSleet",
+        "293" => "LightRain",
+        "296" => "LightRain",
+        "299" => "HeavyShowers",
+        "302" => "HeavyRain",
+        "305" => "HeavyShowers",
+        "308" => "HeavyRain",
+        "311" => "LightSleet",
+        "314" => "LightSleet",
+        "317" => "LightSleet",
+        "320" => "LightSnow",
+        "323" => "LightSnowShowers",
+        "326" => "LightSnowShowers",
+        "329" => "HeavySnow",
+        "332" => "HeavySnow",
+        "335" => "HeavySnowShowers",
+        "338" => "HeavySnow",
+        "350" => "LightSleet",
+        "353" => "LightShowers",
+        "356" => "HeavyShowers",
+        "359" => "HeavyRain",
+        "362" => "LightSleetShowers",
+        "365" => "LightSleetShowers",
+        "368" => "LightSnowShowers",
+        "371" => "HeavySnowShowers",
+        "374" => "LightSleetShowers",
+        "377" => "LightSleet",
+        "386" => "ThunderyShowers",
+        "389" => "ThunderyHeavyRain",
+        "392" => "ThunderySnowShowers",
+        "395" => "HeavySnowShowers",
+        "395" => "HeavySnowShowers",
+        _     => "Unknown",
+    }
+}
+# This line is just to fix highlighting ---> "
 
 # Match a weather condition (cloudy, etc...) to an icon (☁️, etc...).
 def match_condition_icon [condition: string] {
@@ -268,6 +326,7 @@ def test_cache_is_refreshed [] {
 def test_get_current_temperature [] {
     let location = "KCOS"
     let cache = "./test"
+
     let expected = "73°F"
     let result = get_current_temperature $location $cache
 
@@ -329,6 +388,14 @@ def test_get_cache_file_path [] {
 
     let expected = $"('./' | path expand)/test/wttr-in_($location).json"
     let result = get_cache_file_path $location $cache
+
+    assert equal $result $expected
+}
+
+#[test]
+def test_weather_code_match [] {
+    let expected = "HeavySnow"
+    let result = match_weather_code "230"
 
     assert equal $result $expected
 }
