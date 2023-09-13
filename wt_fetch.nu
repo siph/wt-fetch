@@ -88,7 +88,7 @@ def build_cache [
 
         let weather = (
             if ($weather_file) == null {
-                http get $"https://wttr.in/($location)?format=j1"
+                http get -e -m 5 $"https://wttr.in/($location)?format=j1"
             } else {
                 open $weather_file
             }
@@ -96,7 +96,7 @@ def build_cache [
 
         # If `wttr` is not a record then the called failed on `wttr`s end.
         if (($weather | describe | split row '<' | get 0) != "record") {
-            std error "Failed to retrieve weather from `wttr`."
+            std log debug "Failed to retrieve weather from `wttr`."
             return
         }
 
@@ -106,7 +106,7 @@ def build_cache [
         | to json
         | save -f $"(get_cache_file_path $location $cache)"
     } catch {|e|
-        std log error $"Failed to build cache with error: ($e)"
+        std log debug $"Failed to build cache with error: ($e)"
     }
 }
 
