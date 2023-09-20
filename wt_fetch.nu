@@ -232,7 +232,6 @@ def match_weather_code [code: string] {
         _     => "Unknown",
     }
 }
-# This line is just to fix highlighting ---> "
 
 # Match a weather condition (cloudy, etc...) to an icon (☁️, etc...).
 def match_condition_icon [condition: string] {
@@ -260,7 +259,6 @@ def match_condition_icon [condition: string] {
         _                     => {"✨"},
     }
 }
-# This line is just to fix highlighting ---> "
 
 ##
 ## --- Integration Tests ---
