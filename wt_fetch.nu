@@ -147,6 +147,7 @@ def match_moon_phase_icon [phase: string] {
         "firstquarter"   => "🌓",
         "waxinggibbous"  => "🌔",
         "full"           => "🌕",
+        "fullmoon"       => "🌕",
         "waninggibbous"  => "🌖",
         "lastquarter"    => "🌗",
         "waningcrescent" => "🌘",
