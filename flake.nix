@@ -11,19 +11,19 @@
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       perSystem = { config, self', inputs', pkgs, system, ... }: {
 
-        packages = rec {
-          wt-fetch = pkgs.stdenv.mkDerivation rec {
+        packages = with pkgs; rec {
+          wt-fetch = stdenv.mkDerivation rec {
             inherit system;
             name = "wt_fetch";
             pname = "wt-fetch";
             src = ./.;
-            nativeBuildInputs = with pkgs; [ nushell makeWrapper ];
+            nativeBuildInputs = [ nushell makeWrapper ];
             installPhase = ''
               mkdir -p $out/bin
-              mkdir -p $out/nu
-              cp ${name}.nu $out/nu/${pname}.nu
-              makeWrapper ${pkgs.nushell}/bin/nu $out/bin/${pname} \
-                --add-flags "$out/nu/${pname}.nu"
+              mkdir -p $out/share/${name}
+              cp ./${name}.nu $out/share/${name}
+              makeWrapper ${nushell}/bin/nu $out/bin/${name} \
+                --add-flags "$out/share/${name}/${name}.nu"
             '';
           };
           default = wt-fetch;
