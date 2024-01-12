@@ -47,6 +47,9 @@ Here is a preview of all the modules `wt-fetch` currently supports:
 }
 ```
 
+Displayed as a polybar module:  
+![screenshot](./doc/ss.png)
+
 ## How It Works
 
 Location data fetched from `wttr.in` will be cached with subsequent calls
