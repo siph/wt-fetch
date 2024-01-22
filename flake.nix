@@ -14,14 +14,13 @@
         packages = with pkgs; rec {
           wt-fetch = stdenv.mkDerivation rec {
             inherit system;
-            name = "wt_fetch";
-            pname = "wt-fetch";
+            name = "wt-fetch";
             src = ./.;
             nativeBuildInputs = [ nushell makeWrapper ];
             installPhase = ''
               mkdir -p $out/bin
               mkdir -p $out/share/${name}
-              cp ./${name}.nu $out/share/${name}
+              cp ./wt_fetch.nu $out/share/${name}/${name}.nu
               makeWrapper ${nushell}/bin/nu $out/bin/${name} \
                 --add-flags "$out/share/${name}/${name}.nu"
             '';
@@ -39,7 +38,7 @@
               nu run_tests.nu
             '';
             installPhase = ''
-              mkdir -p $out
+              touch $out
             '';
           };
         };
